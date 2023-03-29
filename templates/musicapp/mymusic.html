@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+<head>
+    <title>My Music</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+{% block body %}
+
+<br><br><br><br><br>
+
+<div class="plylst p-3  " style="margin-left: 120px;">
+    <a href="{% url 'playlist' %}" style="text-decoration: none;">
+        <h1 style="color:  rgb(219, 128, 9);"><b>PLAYLIST</b></h1>
+    </a>
+</div>
+<br><br><br><br><br>
+<div class="fav p-3 "  style="margin-left: 120px;">
+    <a href="{% url 'favourite' %}" style="text-decoration: none;">
+        <h1 style="color:  rgb(219, 128, 9);"><b>FAVOURITES</b></h1>
+    </a>
+</div>
+
+
+{% endblock body %}

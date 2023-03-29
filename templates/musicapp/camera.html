@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} camera {% endblock title %}
+{% block body %}
+
+<center>
+    <h1  style="margin-top: 200px;"><a href="{% url 'mooddet' %}"><i class="fa fa-camera" style=" color: rgba(8, 0, 255, 0.532); "></i></a></h1>
+    <p style="font-family: 'Poppins';">
+        <h1>Press R to listen songs based on mood</h1>
+        <h1> Press Q to quit camera <br></h1>
+    </p>
+</center>
+{% endblock body %}

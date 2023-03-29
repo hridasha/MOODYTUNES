@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %} Playlist Songs {% endblock title %}
+{% block body %}
+
+<br>
+{% if messages %}
+<ul class="messages" style="width: 600px;margin-left:400px;">
+    {% for message in messages %}
+        <div class="alert alert-success" style="background-color: #ff7700a3;">
+        <strong>Success!</strong> {{message}}
+        <button type="button" class="close" data-dismiss="alert" style="float: right;" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+<br>
+<br>
+<center>
+<h3>{{playlist_name}}</h3>
+</center>
+<table class="table table-hover " style="margin-left: 120px; background-color: #ff7700a3;">
+<thead>
+    <tr>
+    <th scope="col">#</th>
+    <th scope="col">Song Name</th>
+    <th scope="col">Singer</th>
+    <th scope="col">Song</th>
+    </tr>
+</thead>
+<tbody>
+    {% if songs %}
+    {% for song in songs %}
+    <tr >
+        <th scope="row" >{{forloop.counter}}</th>
+        <td><a href="{% url 'detail' song.song_id %}" style="text-decoration: none; color: black; " >{{song.name}} </a></td>
+        <td>{{song.artist}}</td>
+        <td>
+            <audio controls style="width: 80%;"> <source src="{{ song.song_file.url }}" type="audio/mpeg"> </audio>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+</tbody>
+</table>
+
+
+{% endblock body %}
