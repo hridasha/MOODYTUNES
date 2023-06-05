@@ -8,7 +8,6 @@ from deepface import DeepFace
 import numpy as np
 
 
-
 def index(request):
     if not request.user.is_anonymous:
         recent = list(Recent.objects.filter(
@@ -54,13 +53,13 @@ def index(request):
     sliced_ids = [each['song_id'] for each in songs_all][:6]
     indexpage_songs = Song.objects.filter(song_id__in=sliced_ids)
 
-    context = {'all_songs':indexpage_songs,
-        'recent_songs': recent_songs,
-        'hindi_songs':indexpage_hindi_songs,
-        'english_songs':indexpage_english_songs,
-        'last_played':last_played_song,
-        'first_time': first_time,
-    }
+    context = {'all_songs': indexpage_songs,
+               'recent_songs': recent_songs,
+               'hindi_songs': indexpage_hindi_songs,
+               'english_songs': indexpage_english_songs,
+               'last_played': last_played_song,
+               'first_time': first_time,
+               }
     return render(request, 'musicapp/index.html', context=context)
 
 
@@ -87,11 +86,10 @@ def english_songs(request):
     return render(request, 'musicapp/english_songs.html', context=context)
 
 
-
 def happy_song(request):
 
     happy_song = Song.objects.filter(mood='Happy')
-    return render(request, 'musicapp/happy_song.html',{'happy_song': happy_song})
+    return render(request, 'musicapp/happy_song.html', {'happy_song': happy_song})
 
 
 def sad_song(request):
@@ -138,6 +136,7 @@ def fear_song(request):
     context = {'fear_song': fear_song,  'last_played': last_played_song}
     return render(request, 'musicapp/fear_song.html', context)
 
+
 def hindi_songs(request):
 
     hindi_songs = Song.objects.filter(language='Hindi')
@@ -170,6 +169,7 @@ def play_song(request, id):
     data.save()
     return redirect('all_songs')
 
+
 @login_required(login_url='login')
 def play_song_index(request, id):
     songs = Song.objects.filter(song_id=id).first()
@@ -179,7 +179,6 @@ def play_song_index(request, id):
     data = Recent(song=songs, user=request.user)
     data.save()
     return redirect('index')
-
 
 
 @login_required(login_url='login')
@@ -193,8 +192,8 @@ def play_recent_song(request, id):
     data.save()
     return redirect('recent')
 
-@login_required(login_url='login')
 
+@login_required(login_url='login')
 def allsong(request):
     songs = Song.objects.all()
 
@@ -263,12 +262,12 @@ def recent(request):
         recent = None
         recent_songs = None
 
-    context = {'recent_songs': recent_songs,'last_played': last_played_song,}
+    context = {'recent_songs': recent_songs, 'last_played': last_played_song, }
     return render(request, 'musicapp/recent.html', context=context)
 
 
 @login_required(login_url='login')
-def player(request,id):
+def player(request, id):
     songs = Song.objects.filter(song_id=id).first()
     if list(Recent.objects.filter(song=songs, user=request.user).values()):
         data = Recent.objects.filter(song=songs, user=request.user)
@@ -291,7 +290,8 @@ def player(request,id):
     if request.method == "POST":
         if 'playlist' in request.POST:
             playlist_name = request.POST["playlist"]
-            q = Playlist(user=request.user, song=songs, playlist_name=playlist_name)
+            q = Playlist(user=request.user, song=songs,
+                         playlist_name=playlist_name)
             q.save()
             messages.success(request, "Song added to playlist!")
         elif 'add-fav' in request.POST:
@@ -312,9 +312,10 @@ def player(request,id):
             messages.success(request, "Removed from favorite!")
             return redirect('player', id=id)
 
-    context = {'songs': songs, 'playlists': playlists, 'is_favourite': is_favourite, 'last_played': last_played_song}
+    context = {'songs': songs, 'playlists': playlists,
+               'is_favourite': is_favourite, 'last_played': last_played_song}
     return render(request, 'musicapp/player.html', context=context)
-    
+
 
 @login_required(login_url='login')
 def detail(request, id):
@@ -340,11 +341,11 @@ def detail(request, id):
 
     if request.method == "POST":
 
-        
         if 'playlist' in request.POST:
-            
+
             playlist_name = request.POST["playlist"]
-            query = Playlist(user=request.user, song=songs, playlist_name=playlist_name)
+            query = Playlist(user=request.user, song=songs,
+                             playlist_name=playlist_name)
             query.save()
             messages.success(request, "Song added to playlist!")
         elif 'add-fav' in request.POST:
@@ -365,8 +366,11 @@ def detail(request, id):
             messages.success(request, "Removed from favorite!")
             return redirect('detail', id=id)
 
-    context = {'songs': songs, 'playlists': playlists, 'is_favourite': is_favourite, 'last_played': last_played_song}
+    context = {'songs': songs, 'playlists': playlists,
+               'is_favourite': is_favourite, 'last_played': last_played_song}
     return render(request, 'musicapp/detail.html', context=context)
+
+
 @login_required(login_url='login')
 def search(request):
     songs = Song.objects.all()
@@ -389,18 +393,19 @@ def search(request):
 def playlist(request):
     playlists = Playlist.objects.filter(
         user=request.user).values('playlist_name').distinct()
-    
+
     context = {'playlists': playlists}
     return render(request, 'musicapp/playlist.html', context=context)
 
 
 def playlist_songs(request, playlist_name):
     songs = Song.objects.filter(
-    playlist__playlist_name=playlist_name, playlist__user=request.user).distinct()
+        playlist__playlist_name=playlist_name, playlist__user=request.user).distinct()
 
     if request.method == "POST":
         song_id = list(request.POST.keys())[1]
-        playlist_song = Playlist.objects.filter(playlist_name=playlist_name, song__id=song_id, user=request.user)
+        playlist_song = Playlist.objects.filter(
+            playlist_name=playlist_name, song__id=song_id, user=request.user)
         playlist_song.delete()
         messages.success(request, "Song removed from playlist!")
 
@@ -410,56 +415,65 @@ def playlist_songs(request, playlist_name):
 
 
 def favourite(request):
-    songs = Song.objects.filter(favourite__user=request.user, favourite__is_fav=True).distinct()
+    songs = Song.objects.filter(
+        favourite__user=request.user, favourite__is_fav=True).distinct()
     print(f'songs: {songs}')
 
     if request.method == "POST":
-        
-        song_id = list (request.POST.keys())[1]
-        favourite_song = Favourite.objects.filter(user=request.user, song__id=song_id, is_fav=True)
+
+        song_id = list(request.POST.keys())[1]
+        favourite_song = Favourite.objects.filter(
+            user=request.user, song__id=song_id, is_fav=True)
         favourite_song.delete()
         messages.success(request, "Removed from favourite!")
     context = {'songs': songs}
     return render(request, 'musicapp/fav.html', context=context)
 
+
 @login_required(login_url='login')
 def mymusic(request):
     return render(request, 'musicapp/mymusic.html')
+
+
 @login_required(login_url='login')
 def cam(request):
     return render(request, 'musicapp/camera.html')
 
 def mooddet(request):
-    exp=['happy','sad','neutral','fear','angry']
-    facecascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    exp = ['happy', 'sad', 'neutral', 'fear', 'angry']
+    facecascade = cv2.CascadeClassifier(
+        cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-    cap = cv2.VideoCapture(0,  cv2.CAP_DSHOW)
+    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
     while True:
         ret, frame = cap.read()
         result = DeepFace.analyze(frame, actions=['emotion'], enforce_detection=False)
 
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        if len(result) > 0:
+            emotion = result[0]['dominant_emotion']
 
-        faces = facecascade.detectMultiScale(frame, 1.1, 5)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 3)
+            faces = facecascade.detectMultiScale(frame, 1.1, 5)
 
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(frame, result['dominant_emotion'],(50, 50),font, 1,(220, 220, 220),2,cv2.LINE_4)
-        # cv2.putText(frame, result['dominant_emotion'],(5, 50), font, 2, (0, 0, 0), 2, cv2.LINE_4)
+            for (x, y, w, h) in faces:
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 3)
 
-        cv2.imshow('Capturing', frame)
-        emotion=result['dominant_emotion']
-        print(emotion)
-        if cv2.waitKey(3) & 0xFF == ord('r'):
+            font = cv2.FONT_HERSHEY_SIMPLEX
+
+            cv2.putText(frame, emotion, (50, 50), font, 1, (220, 220, 220), 2, cv2.LINE_4)
+
+            cv2.imshow('Capturing', frame)
+            print(emotion)
+        key = cv2.waitKey(1)
+        if key == ord('r'):
             if emotion == 'happy':
                 cap.release()
                 cv2.destroyAllWindows()
                 happy_song = Song.objects.filter(mood='Happy')
                 context = {'happy_song': happy_song}
-                return render(request, 'musicapp/happy_song.html', context )
+                return render(request, 'musicapp/happy_song.html', context)
             elif emotion == 'sad':
                 cap.release()
                 cv2.destroyAllWindows()
@@ -484,8 +498,9 @@ def mooddet(request):
                 angry_song = Song.objects.filter(mood='Angry')
                 context = {'angry_song': angry_song}
                 return render(request, 'musicapp/angry_song.html', context)
-        if cv2.waitKey(2) & 0xFF == ord('q'):
+
+        elif key == ord('q'):
+            cap.release()
+            cv2.destroyAllWindows()
             break
-    cap.release()
-    cv2.destroyAllWindows()
     return render(request, 'musicapp/camera.html')
